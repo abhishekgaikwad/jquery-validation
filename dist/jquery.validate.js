@@ -617,13 +617,21 @@ $.extend( $.validator, {
 
 		focusInvalid: function() {
 			if ( this.settings.focusInvalid ) {
+				var element = $( this.findLastActive() || this.errorList.length && this.errorList[ 0 ].element || [] );
+				var visible = element.filter( ":visible" );
 				try {
-					$( this.findLastActive() || this.errorList.length && this.errorList[ 0 ].element || [] )
-					.filter( ":visible" )
-					.trigger( "focus" )
+					if ( visible.length > 0 ) {
+						visible .trigger( "focus" )
 
-					// Manually trigger focusin event; without it, focusin handler isn't called, findLastActive won't have anything to find
-					.trigger( "focusin" );
+						// Manually trigger focusin event; without it, focusin handler isn't called, findLastActive won't have anything to find
+						.trigger( "focusin" );
+					} else if ( element.hasClass( "selectized" ) ) {
+						var div = element.closest( "div" );
+						if ( div.length > 0 ) {
+							div.get( 0 ).scrollIntoView();
+						}
+					}
+
 				} catch ( e ) {
 
 					// Ignore IE throwing errors when focusing hidden elements
